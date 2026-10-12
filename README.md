@@ -1,8 +1,10 @@
 # mac-disk-cleanup-skill
 
-Cursor Agent Skill to free disk space on macOS — safely.
+**Portable Agent Skill** (`SKILL.md` open standard) to free disk space on macOS — safely.
 
-Skill de Cursor para liberar espacio en disco en macOS — con cuidado.
+Skill portable para liberar espacio en disco en macOS. Funciona con **Claude Code, OpenAI Codex, Cursor, Gemini CLI, OpenCode** y cualquier agente que cargue skills desde una carpeta con `SKILL.md`.
+
+No está atado a un único producto: el formato es el estándar abierto de Agent Skills.
 
 ---
 
@@ -15,27 +17,54 @@ Skill de Cursor para liberar espacio en disco en macOS — con cuidado.
 3. **Asks before Risky tier** — simulators, Docker volumes, Archives, etc.
 4. **Never** touches Documents, Photos, SSH keys, or source projects unless you name a path.
 
-### Install (Cursor)
+### Quick install (all major agents)
 
 ```bash
 git clone https://github.com/jaquinterob/mac-disk-cleanup-skill.git
-mkdir -p ~/.cursor/skills
-ln -sfn "$(pwd)/mac-disk-cleanup-skill/skills/mac-disk-cleanup" ~/.cursor/skills/mac-disk-cleanup
+cd mac-disk-cleanup-skill
+./install.sh
 ```
 
-Or copy the folder:
+`install.sh` symlinks the skill into the usual personal skill dirs:
+
+| Agent | Personal path |
+|-------|----------------|
+| Codex / shared | `~/.agents/skills/mac-disk-cleanup` |
+| Claude Code | `~/.claude/skills/mac-disk-cleanup` |
+| Cursor | `~/.cursor/skills/mac-disk-cleanup` |
+| Codex (legacy dir) | `~/.codex/skills/mac-disk-cleanup` |
+
+Then ask your agent: *“Free up disk space on my Mac”*.
+
+### Manual install (pick one)
+
+Canonical folder to link or copy:
+
+`skills/mac-disk-cleanup/`  → contains `SKILL.md`, `reference.md`, `scripts/`
 
 ```bash
-cp -R mac-disk-cleanup-skill/skills/mac-disk-cleanup ~/.cursor/skills/mac-disk-cleanup
+SKILL_SRC="$(pwd)/skills/mac-disk-cleanup"
+
+# Codex / many agents (recommended shared location)
+mkdir -p ~/.agents/skills && ln -sfn "$SKILL_SRC" ~/.agents/skills/mac-disk-cleanup
+
+# Claude Code
+mkdir -p ~/.claude/skills && ln -sfn "$SKILL_SRC" ~/.claude/skills/mac-disk-cleanup
+
+# Cursor
+mkdir -p ~/.cursor/skills && ln -sfn "$SKILL_SRC" ~/.cursor/skills/mac-disk-cleanup
 ```
 
-Restart Cursor or start a new agent chat, then ask e.g. *“Free up disk space on my Mac”*.
+**Project-scoped:** put (or symlink) the same folder at:
 
-### Manual scripts
+- `.agents/skills/mac-disk-cleanup/` — Codex, Cursor, Gemini CLI, OpenCode, …
+- `.claude/skills/mac-disk-cleanup/` — Claude Code (does not scan `.agents/` alone)
+
+### Works without any agent
 
 ```bash
 cd skills/mac-disk-cleanup
-bash scripts/audit.sh        # report sizes
+bash scripts/audit.sh
 bash scripts/clean-safe.sh   # Safe tier only
 ```
 
@@ -48,30 +77,34 @@ bash scripts/clean-safe.sh   # Safe tier only
 | `npm cache clean --force` | Xcode Archives / DeviceSupport |
 | `docker system prune -f` | Deleting extra Xcode.app |
 
+### Other agents / custom setups
+
+Point the agent at `skills/mac-disk-cleanup/SKILL.md` (or paste its contents into your system prompt / custom instructions). Scripts stay next to the skill; run them with a shell from that directory.
+
 ---
 
 ## Español
 
 ### Qué hace (modo B)
 
-1. **Audita** espacio libre y cachés habituales (Xcode, Docker, Homebrew, npm).
-2. **Limpia solo el nivel Safe** — cachés regenerables.
-3. **Pide confirmación** antes del nivel Risky — simuladores, volúmenes Docker, Archives, etc.
-4. **Nunca** toca Documentos, Fotos, llaves SSH ni código de proyectos salvo que indiques una ruta.
+1. **Audita** espacio libre y cachés (Xcode, Docker, Homebrew, npm).
+2. **Limpia solo Safe** — cachés regenerables.
+3. **Pide confirmación** en Risky — simuladores, volúmenes Docker, Archives, etc.
+4. **Nunca** toca Documentos, Fotos, SSH ni código salvo que indiques una ruta.
 
-### Instalar (Cursor)
+### Instalación rápida
 
 ```bash
 git clone https://github.com/jaquinterob/mac-disk-cleanup-skill.git
-mkdir -p ~/.cursor/skills
-ln -sfn "$(pwd)/mac-disk-cleanup-skill/skills/mac-disk-cleanup" ~/.cursor/skills/mac-disk-cleanup
+cd mac-disk-cleanup-skill
+./install.sh
 ```
 
-O copia la carpeta a `~/.cursor/skills/mac-disk-cleanup`.
+Luego pídele a tu agente: *“Libera espacio en mi Mac”*.
 
-Reinicia Cursor o abre un chat nuevo y pide, por ejemplo: *“Libera espacio en mi Mac”*.
+Compatible con Claude Code, Codex, Cursor y otros que lean Agent Skills. Detalle de rutas en la tabla de arriba (sección English).
 
-### Scripts
+### Sin agente
 
 ```bash
 cd skills/mac-disk-cleanup
@@ -84,12 +117,13 @@ bash scripts/clean-safe.sh
 ## Layout
 
 ```
-skills/mac-disk-cleanup/
-├── SKILL.md           # Agent instructions
-├── reference.md       # Full command catalog
+skills/mac-disk-cleanup/     # portable skill package (share this folder)
+├── SKILL.md                 # Agent Skills standard
+├── reference.md
 └── scripts/
     ├── audit.sh
     └── clean-safe.sh
+install.sh                   # symlink into Claude / Codex / Cursor dirs
 ```
 
 ## License

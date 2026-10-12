@@ -11,7 +11,11 @@ description: >-
 
 # Mac Disk Cleanup (mode B)
 
+Portable **Agent Skill** (`SKILL.md`) for any coding agent with shell access (Claude Code, Codex, Cursor, Gemini CLI, OpenCode, etc.).
+
 Safe-by-default macOS cleanup focused on **Xcode, Docker, Homebrew, and npm**.
+
+Resolve script paths relative to this skill directory (where `SKILL.md` lives).
 
 ## Policy (mode B)
 
